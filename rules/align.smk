@@ -26,8 +26,8 @@ rule align_star:
     log: "log/{sample}_star.log"
     threads: 16
     params:
-        index = config["ref"]["star"]
-        annotation = config["ref"]["annotation"]
+        index = config["ref"]["star"],
+        annotation = config["ref"]["annotation"],
         prefix = "align/{sample}_star/"
     conda: "envs/map.yaml"
     shell: """
@@ -67,14 +67,12 @@ rule align_star_mate:
     input:
         "seq/{sample}_{mate}.trim.fastq.gz"
     output:
-        "align/{sample}_star/{mate}.Aligned.sortedByCoord.out.bam"
         "align/{sample}_star/{mate}.Chimeric.out.junction"
-        "align/{sample}_star/{mate}.ReadsPerGene.out.tab"
     log: "log/{sample}_{mate}_star.log"
     threads: 16
     params:
-        index = config["ref"]["star_index"]
-        annotation = config["ref"]["annotation"]
+        index = config["ref"]["star"],
+        annotation = config["ref"]["annotation"],
         prefix = "align/{sample}_star/{mate}."
     conda: "envs/map.yaml"
     shell: """

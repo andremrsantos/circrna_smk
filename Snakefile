@@ -31,17 +31,3 @@ singularity: "docker://continuumio/miniconda3:4.5.12"
 include: "rules/trim.smk"
 include: "rules/align.smk"
 include: "rules/quant.smk"
-
-## Getting all rules
-rule all:
-    input:
-        expand("circrna/ce/{samples}_back_spliced_junction.bed",
-               samples = samples),
-        expand("circrna/ciri/{samples}_circRNA.txt",
-               samples = samples),
-        "circrna/dcc/se/CircRNACount",
-        "circrna/dcc/pe/CircRNACount",
-        "circrna/ce/ce_circrna.tsv",
-        "circrna/ciri/ciri_circrna.tsv",
-        "circrna/dcc/dcc_circrna.tsv",
-        "circrna/circrna_intersect.tsv"

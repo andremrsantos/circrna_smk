@@ -2,10 +2,10 @@ junc_pattern = "align/{sample}_star/{mate}Chimeric.out.junction"
 
 def get_sheets(wc):
     if wc.seq_type == "se":
-        return "circrna/dcc_se/samplesheet"
-    return ["@circrna/dcc_pe/samplesheet",
-            "-mt1 @circrna/dcc_pe/mate1",
-            "-mt2 @circrna/dcc_pe/mate2"]
+        return ["circrna/dcc_se/samplesheet"]
+    return ["circrna/dcc_pe/samplesheet",
+            "circrna/dcc_pe/mate1",
+            "circrna/dcc_pe/mate2"]
 
 def get_aligns(wc):
     return expand(
@@ -18,7 +18,7 @@ rule ciri:
     log: "log/{sample}_ciri.log"
     threads: 8
     params:
-        ref = config["ref"]["bwa"]
+        ref = config["ref"]["bwa"],
         ann = config["ref"]["annotation"]
     singularity: "docker://andremrsantos/ciri2"
     shell: """
@@ -45,7 +45,7 @@ rule circexplorer_annotate:
     threads: 4
     conda: "envs/circexplorer.yaml"
     params:
-        ref = config["ref"]["bwa"]
+        ref = config["ref"]["bwa"],
         pred = config["ref"]["pred"]
     shell: """
     CIRCexplorer2 annotate \
@@ -54,7 +54,7 @@ rule circexplorer_annotate:
     """
 
 rule dcc_se_samplesheet:
-    input: expand(junc_wc, sample = se_samples, mate = "")
+    input: expand(junc_pattern, sample = se_samples, mate = "")
     output: "circrna/dcc_se/samplesheet"
     run:
         with open(output[0], "w") as out:
@@ -62,35 +62,40 @@ rule dcc_se_samplesheet:
 
 rule dcc_pe_samplesheet:
     input:
-        expand(junc_wc, sample = pe_samples, mate = ""),
-        expand(junc_wc, sample = pe_samples, mate = "R1."),
-        expand(junc_wc, sample = pe_samples, mate = "R2.")
+        expand(junc_pattern, sample = pe_samples, mate = ""),
+        expand(junc_pattern, sample = pe_samples, mate = "R1."),
+        expand(junc_pattern, sample = pe_samples, mate = "R2.")
     output:
-        "circrna/dcc_pe/samplesheet"
-        "circrna/dcc_pe/mate1"
+        "circrna/dcc_pe/samplesheet",
+        "circrna/dcc_pe/mate1",
         "circrna/dcc_pe/mate2"
     run:
         for i in range(3):
             with open(output[i], "w") as out:
                 out.write("\n".join(input[i]))
 
+def mates(wc, input):
+    if wc.seq_type == "pe":
+        return "-mt1 @{}, -mt2 @{} -Pi".format(input[1], input[2])
+    return ""
+
 rule dcc:
     input:
-        sheet = get_sheets
+        sheet = get_sheets,
         align = get_aligns
     output: "circrna/dcc_{seq_type}/CircRNACount"
     threads: 16
     params:
         ref = config["ref"]["bwa"],
-        ann = config["ref"]["annotation"]
-        wkdir = "circrna/dcc_{seq_type}"
-        paired = lamdba wc: "-Pi" if wc.seq_type == "pe" else ""
+        ann = config["ref"]["annotation"],
+        wkdir = "circrna/dcc_{seq_type}",
+        mates = mates,
     singularity: "docker://andremrsantos/dcc"
     shell: """
     DCC {input.sheet} \
-    -D -F -fg -G -Nr 5 1 {params.paired} \
+    -D -F -fg -G -Nr 5 1 {params.mates} \
     -T {threads} \
     -A {params.ref} -an {params.ann} \
-    -O {params.work_dir}/ \
-    -t {params.work_dir}/_tmp
+    -O {params.wkdir}/ \
+    -t {params.wkdir}/_tmp
     """
