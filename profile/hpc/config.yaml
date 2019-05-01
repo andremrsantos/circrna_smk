@@ -1,0 +1,10 @@
+jobs: 50
+
+cluster: "qsub -d $PWD -l nodes=1:ppn={threads} -l mem={cluster.mem}gb -l walltime={cluster.time} -j oe -o {cluster.log}"
+cluster-config: "cluster.yaml"
+latency-wait: 30
+
+use-conda: true
+
+use-singularity: true
+singularity-args: "--bind /data:/data"

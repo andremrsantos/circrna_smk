@@ -1,0 +1,5 @@
+channels:
+   - r
+dependencies:
+   - r-base=3.5.1
+   - r-tidyverse=1.2.1

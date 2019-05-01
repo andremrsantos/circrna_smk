@@ -1,0 +1,4 @@
+channels:
+  - bioconda
+dependencies:
+  - circexplorer2=2.3.5
