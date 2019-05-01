@@ -1,0 +1,15 @@
+seq_se: "seq/se"
+seq_pe: "seq/pe"
+ref:
+    bwa: "/data/rsc/hg19/ucsc.hg19.fasta"
+    star: "/data/rsc/hg19/star/"
+    pred: "/data/rsc/gencode/gencode.v19.annotation.genePred"
+    annotation: "/data/rsc/gencode/gencode.v19.annotation.gtf"
+trim:
+    adapter_r1: "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+    adapter_r2: "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT"
+    min_length: 16
+    left: 10
+    right: 10
+    window: 5
+    window_mean: 16
