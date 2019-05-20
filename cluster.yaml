@@ -1,0 +1,5 @@
+__default__:
+    n : 8
+    mem: 16
+    time: "48:00:00"
+    log: "log/{rule}.{wildcards}.log"
