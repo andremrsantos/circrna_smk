@@ -10,7 +10,7 @@ rule trim_fastp_se:
     log:
         html = "log/{sample}_fastp.html",
 	json = "log/{sample}_fastp.json"
-    conda: "envs/trim.yaml"
+    conda: "../envs/trim.yaml"
     shell: """
     fastp --thread {threads} {trim} \
     -i {input} -o {output} \
@@ -28,7 +28,7 @@ rule trim_fastp_pe:
     log:
         html = "log/{sample}_fastp.html",
 	json = "log/{sample}_fastp.json"
-    conda: "envs/trim.yaml"
+    conda: "../envs/trim.yaml"
     shell: """
     fastp --thread {threads} {trim} \
     -i {input.R1}  -I {input.R2} \

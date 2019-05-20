@@ -11,7 +11,7 @@ rule align_bwa:
     threads: 16
     params:
         index = config["ref"]["bwa"]
-    conda: "envs/map.yaml"
+    conda: "../envs/map.yaml"
     shell: """
     bwa mem -t {threads} -T19 {params.index} {input} \
     > {output} 2> {log}
@@ -20,16 +20,15 @@ rule align_bwa:
 rule align_star:
     input: get_trimmed
     output:
-        "align/{sample}_star/Aligned.sortedByCoord.out.bam"
-        "align/{sample}_star/Chimeric.out.junction"
-        "align/{sample}_star/ReadsPerGene.out.tab"
+        "align/{sample}_star/Aligned.sortedByCoord.out.bam",
+        "align/{sample}_star/Chimeric.out.junction",
     log: "log/{sample}_star.log"
     threads: 16
     params:
         index = config["ref"]["star"],
         annotation = config["ref"]["annotation"],
         prefix = "align/{sample}_star/"
-    conda: "envs/map.yaml"
+    conda: "../envs/map.yaml"
     shell: """
     STAR --runThreadN {threads} \
     --genomeDir {params.index} \
@@ -60,7 +59,7 @@ rule align_star:
     --chimJunctionOverhangMin 15 \
     --outStd Log > {log}
 
-    samtools index {output[1]} >> {log}
+    samtools index {output[0]} >> {log}
     """
 
 rule align_star_mate:
@@ -74,14 +73,14 @@ rule align_star_mate:
         index = config["ref"]["star"],
         annotation = config["ref"]["annotation"],
         prefix = "align/{sample}_star/{mate}."
-    conda: "envs/map.yaml"
+    conda: "../envs/map.yaml"
     shell: """
     STAR --runThreadN {threads} \
     --genomeDir {params.index} \
     --outSAMtype None \
     --readFilesIn {input} \
     --readFilesCommand zcat \
-    --sjdbGTFfile {params.annotation}
+    --sjdbGTFfile {params.annotation} \
     --outFileNamePrefix {params.prefix} \
     --outFilterMultimapNmax 20 \
     --outFilterMismatchNmax 2 \
