@@ -44,6 +44,7 @@ I have provided a docker container to run both applications.
 ## Results
 
 the results will be distributed in the directories:
+
 	- seq (filtered and trimmed sequences)
 	- align (alignment results)
 	- circrna/circexplorer (circexplorer results)
